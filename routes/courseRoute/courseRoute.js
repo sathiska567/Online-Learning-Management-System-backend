@@ -1,5 +1,5 @@
 const express = require('express');
-const { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController } = require('../../controllers/courseController/courseController');
+const { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController } = require('../../controllers/courseController/courseController');
 
 const router = express.Router();
 
@@ -18,5 +18,9 @@ router.post("/update",updatedCreateCourseController)
 
 // Course Delete Route
 router.post("/delete",courseDeleteController)
+
+
+// course review and rating route
+router.post("/review",reviewRatingController)
 
 module.exports = router

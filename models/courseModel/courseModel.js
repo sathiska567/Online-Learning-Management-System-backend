@@ -26,13 +26,28 @@ const CourseSchema = new mongoose.Schema({
                 required: false,
                 default: []
         },
-        ratings: {
-                type: Number,
-                required: false
-        },
-        reviews: {
-                type: [String],
-                required: false
+        reviews: [
+           {
+              userId: {
+                 type: String,
+                 ref: 'authModel',
+                 required: false,
+              },
+              reviewText: {
+                 type: String, 
+                 required: false,
+              },
+              rating: {
+                 type: Number,
+                 min: 1,
+                 max: 5,
+              },
+                },
+              ],
+        overallRatings:{
+          type:Number,
+          required:false,
+          default:0
         },
         instructor: {
                 type: String,
