@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
         type:Boolean,
         required:true
     },
+    isAdmin:{
+        type:Boolean,
+        required:false
+    },
     isTeacherVerified:{
         type:Boolean,
         default:false

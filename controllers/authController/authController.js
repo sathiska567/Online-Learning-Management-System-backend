@@ -108,5 +108,35 @@ const authLoginController = async (req, res) => {
   }
 }
 
+// get current user details
+const getCurrentUserController = async (req, res) => {
+  try {
+    // console.log(req.body);
+    
+      const user = await authModel.findOne({ email: req.body.email })
+      console.log(user);
 
-module.exports = { authRegisterController, authLoginController };
+      if (!user) {
+          res.status(404).send({
+              message: "User Cannot find !!",
+              success: false
+          })
+      }
+
+      res.status(200).send({
+          message: "Details found",
+          success: true,
+          user
+      })
+
+  } catch (error) {
+
+      res.status(400).send({
+          message: "Error occured while login ",
+          success: false
+      })
+
+  }
+}
+
+module.exports = { authRegisterController, authLoginController , getCurrentUserController };
