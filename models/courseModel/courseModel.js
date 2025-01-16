@@ -69,6 +69,11 @@ const CourseSchema = new mongoose.Schema({
                 type: Boolean,
                 default: false
         },
+        progress:{
+           type:Number,
+           required:false,
+           default:0
+        },
         createdAt: {
                 type: Date,
                 default: Date.now

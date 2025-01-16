@@ -50,7 +50,7 @@ const courseCreateController = async (req, res) => {
 
 const getCreatedCourseController = async (req, res) => {
      try {
-          const response = await Course.find({});
+          const response = await Course.find({isApprove:true});
 
           res.status(200).send({
                success: true,
@@ -314,5 +314,46 @@ const createdAllCourseWithCategory = async (req, res) => {
      }
    };
    
+// set course progress
+const setCourseProgressController = async(req,res)=>{
+     try {
+          const {course_id , progress} = req.body;
+          const course = await Course.findByIdAndUpdate(course_id , {progress} , {new:true})
 
-module.exports = { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController,getEachUserCreatedCourseController,createdAllCourseWithCategory };
+          res.status(200).send({
+               success: true,
+               message: "Course progress updated successfully",
+               course
+          })
+       
+       
+     }catch (error) {
+        res.status(400).send({
+               success: false,
+               message: "Error while getting course",
+               error: error.message
+        })
+     }
+     
+   }
+
+const getAllCoursesControllerWithoutApproval = async (req, res) => {
+  try {
+     const response = await Course.find({})
+
+     res.status(200).send({
+          success: true,
+          message: "All courses",
+          response
+     })
+     
+  } catch (error) {
+      res.status(400).send({
+        success: false,
+        message: 'Error while getting courses',
+        error: error.message
+      })
+  }
+}
+
+module.exports = { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController,getEachUserCreatedCourseController,createdAllCourseWithCategory,setCourseProgressController,getAllCoursesControllerWithoutApproval };

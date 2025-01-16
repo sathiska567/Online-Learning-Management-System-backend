@@ -84,7 +84,6 @@ const getOneStudentEnrollCoursesController = async(req,res)=>{
         try {
             const {student_id} = req.params
             console.log(student_id);
-            
 
             const allCourses = await Course.find({})
  

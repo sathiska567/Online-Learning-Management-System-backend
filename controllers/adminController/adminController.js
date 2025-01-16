@@ -150,4 +150,70 @@ const BannedUserController = async (req, res) => {
     }
     
 
-module.exports={approveCourseController,TeacherRoleApproveController , getAllTeacherController , getAllStudentController , BannedUserController}
+const approveCoursesController = async (req, res) => {
+    try {
+        console.log(req.body);
+        
+        const { course_id, isApproved } = req.body;
+
+        const courseResponse = await Course.findOne({ _id: course_id });
+
+        if (!courseResponse) {
+            return res.status(400).send({
+                success: false,
+                message: "Course not found"
+            });
+        }
+
+        courseResponse.isApprove = isApproved;
+        courseResponse.isDeleted = false;
+        await courseResponse.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Course updated successfully",
+            course: courseResponse
+        })
+
+        
+
+    }catch(err){
+        res.status(400).send({
+            success: false,
+            message: err.message
+        })
+    }
+}
+
+const removeApproveCoursesController = async (req, res) => {
+    try {
+        const { course_id } = req.body;
+
+        const courseResponse = await Course.findOne({ _id: course_id });
+
+        if (!courseResponse) {
+            return res.status(400).send({
+                success: false,
+                message: "Course not found"
+            });
+        }
+
+        courseResponse.isApprove = false;
+        courseResponse.isDeleted = true;
+        await courseResponse.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Course updated successfully",
+            course: courseResponse
+        })
+
+    }catch(err){
+        res.status(400).send({
+            success: false,
+            message: err.message
+        })
+    }
+}
+
+module.exports={approveCourseController,TeacherRoleApproveController , getAllTeacherController , getAllStudentController , BannedUserController , approveCoursesController , removeApproveCoursesController}

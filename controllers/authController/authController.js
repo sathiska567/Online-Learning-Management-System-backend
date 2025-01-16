@@ -60,7 +60,7 @@ const authLoginController = async (req, res) => {
     const secretKey = process.env.SECRETE_KEY;
     
     const options = {
-      expiresIn: '1h',
+      expiresIn: '1d',
     };
 
     const data = await authModel.findOne({ email: email })
@@ -143,12 +143,14 @@ const getAllTeachersController = async(req,res)=>{
   try {
     const data = await authModel.find({isTeacher:true})
     const studentData = await authModel.find({isStudent:true})
+    const verifiedTeachers = data.filter((teacher)=>teacher.isTeacherVerified)
 
     res.status(200).send({
       success: true,
       message: "All teachers found",
       data: data.length,
-      studentData:studentData.length
+      studentData:studentData.length,
+      pendingTeachers : (data.length - verifiedTeachers.length)
  })
        
   } catch (error) {
@@ -160,5 +162,24 @@ const getAllTeachersController = async(req,res)=>{
   }
 }
 
+// get all teachers details
+const getAllTeacherDetailsController = async(req,res)=>{
+  try {
+    const data = await authModel.find({isTeacher:true})
+    res.status(200).send({
+      success: true,
+      message: "All teachers found",
+      data
+ })
 
-module.exports = { authRegisterController, authLoginController , getCurrentUserController ,getAllTeachersController};
+  } catch (error) {
+       res.status(400).send({
+            success: false,
+            message: "Error while getting course",
+            error: error.message
+       })
+  }
+}
+
+
+module.exports = { authRegisterController, authLoginController , getCurrentUserController ,getAllTeachersController,getAllTeacherDetailsController};
