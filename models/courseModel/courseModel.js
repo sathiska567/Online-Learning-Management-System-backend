@@ -57,7 +57,7 @@ const CourseSchema = new mongoose.Schema({
                 type: String,
                 required: false
         },
-        idDeleted: {
+        isDeleted: {
                 type: Boolean,
                 default: false
         },

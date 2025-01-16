@@ -1,6 +1,8 @@
-const Course = require('../../models/courseModel/courseModel'); // Adjust the path as per your project structure
+const Course = require('../../models/courseModel/courseModel');
 
-const courseCreateController = async (req, res) => {
+const courseCreateController = async (req, res) => {     
+     // console.log(req);
+     
      try {
           const {
                title,
@@ -8,9 +10,6 @@ const courseCreateController = async (req, res) => {
                imgLink,
                category,
                price,
-               enrolledStudents,
-               ratings,
-               reviews,
                instructor,
                duration,
                createdAt,

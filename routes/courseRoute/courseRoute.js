@@ -2,10 +2,11 @@ const express = require('express');
 const { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController } = require('../../controllers/courseController/courseController');
 
 const router = express.Router();
+const expressFormidable = require('express-formidable');
 
 
 // create course
-router.post('/create', courseCreateController);
+router.post('/create', expressFormidable({maxFileSize:5*1024*1024}) ,courseCreateController);
 
 // get Created All Course
 router.get('/all', getCreatedCourseController);
