@@ -3,6 +3,8 @@ const Course = require("../../models/courseModel/courseModel")
 
 const courseEnrollController = async(req,res)=>{
         try {
+          console.log(req.body);
+          
           const {course_id , student_id} = req.body
 
           const course = await Course.findById(course_id)
@@ -21,7 +23,7 @@ const courseEnrollController = async(req,res)=>{
           }
 
           if(course.isApprove == false){
-            return res.status(200).send({
+            return res.status(400).send({
                 success:false,
                 message:"Course is not approved by admin"
             })

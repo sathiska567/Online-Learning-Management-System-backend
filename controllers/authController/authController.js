@@ -139,4 +139,26 @@ const getCurrentUserController = async (req, res) => {
   }
 }
 
-module.exports = { authRegisterController, authLoginController , getCurrentUserController };
+const getAllTeachersController = async(req,res)=>{
+  try {
+    const data = await authModel.find({isTeacher:true})
+    const studentData = await authModel.find({isStudent:true})
+
+    res.status(200).send({
+      success: true,
+      message: "All teachers found",
+      data: data.length,
+      studentData:studentData.length
+ })
+       
+  } catch (error) {
+       res.status(400).send({
+            success: false,
+            message: "Error while getting course",
+            error: error.message
+       })
+  }
+}
+
+
+module.exports = { authRegisterController, authLoginController , getCurrentUserController ,getAllTeachersController};

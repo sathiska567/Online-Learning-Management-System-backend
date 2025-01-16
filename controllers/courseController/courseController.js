@@ -1,22 +1,11 @@
 const Course = require('../../models/courseModel/courseModel');
 
 const courseCreateController = async (req, res) => {     
-     // console.log(req);
+     console.log(req.body);
      
      try {
           const {
-               title,
-               description,
-               imgLink,
-               category,
-               price,
-               instructor,
-               duration,
-               createdAt,
-               updatedAt,
-          } = req.body;
-
-          const newCourse = new Course({
+               teacherId,
                title,
                description,
                imgLink,
@@ -27,8 +16,20 @@ const courseCreateController = async (req, res) => {
                reviews,
                instructor,
                duration,
-               createdAt,
-               updatedAt,
+          } = req.body;
+
+          const newCourse = new Course({
+               teacherId,
+               title,
+               description,
+               imgLink,
+               category,
+               price,
+               enrolledStudents,
+               ratings,
+               reviews,
+               instructor,
+               duration,
           });
 
           await newCourse.save();
@@ -66,7 +67,30 @@ const getCreatedCourseController = async (req, res) => {
      }
 }
 
+const getEachUserCreatedCourseController = async(req,res)=>{
+     try {
+       const {teacherId} = req.body;
+
+       const createdCourse = await Course.find({teacherId:teacherId , isDeleted:false});
+
+       res.status(200).send({
+        success:true,
+        message:"Course fetched successfully",
+        data:createdCourse
+       })
+          
+     } catch (error) {
+          res.status(400).send({
+               success: false,
+               message: "Error while getting course",
+               error: error.message
+          })
+     }
+}
+
 const updatedCreateCourseController = async (req, res) => {
+     // console.log(req.body);
+     
      try {
           const {
                id,
@@ -119,7 +143,7 @@ const courseDeleteController = async (req, res) => {
      try {
           const { id } = req.body
 
-          const deleteResponse = await Course.findByIdAndUpdate(id, { idDeleted: true }, { new: true })
+          const deleteResponse = await Course.findByIdAndUpdate(id, { isDeleted: true }, { new: true })
 
           res.status(200).send({
                success: true,
@@ -134,7 +158,6 @@ const courseDeleteController = async (req, res) => {
           })
      }
 }
-
 
 const getCreatedOneCourseController = async (req, res) => {
      try {
@@ -214,4 +237,82 @@ const reviewRatingController = async (req, res) => {
 }
 
 
-module.exports = { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController };
+const createdAllCourseWithCategory = async (req, res) => {
+     try {
+       const wedDevelopment = [];
+       const mobileDevelopment = [];
+       const Marketing = [];
+       const MachineLearning = [];
+       const Other = [];
+       
+       // Change these to let, so they can be updated
+       let webEnrolStudent = 0;
+       let mobileEnrolStudent = 0;
+       let marketingEnrolStudent = 0;
+       let machineLearningEnrolStudent = 0;
+       let otherEnrolStudent = 0;
+   
+       const data = await Course.find({});
+   
+       for (let i = 0; i < data.length; i++) {
+         if (data[i].category === 'Web Development') {
+           wedDevelopment.push(data[i]);
+         } else if (data[i].category === 'Mobile Development') {
+           mobileDevelopment.push(data[i]);
+         } else if (data[i].category === 'Machine Learning') {
+           MachineLearning.push(data[i]);
+         } else if (data[i].category === 'Marketing') {
+           Marketing.push(data[i]);
+         } else if (data[i].category === 'Other') {
+           Other.push(data[i]);
+         }
+       }
+   
+       // Update the enrollment counts for each category
+       for (let i = 0; i < wedDevelopment.length; i++) {
+         webEnrolStudent += wedDevelopment[i].enrolledStudents.length;
+       }
+   
+       // You can similarly count enrolled students for other categories as well
+       for (let i = 0; i < mobileDevelopment.length; i++) {
+         mobileEnrolStudent += mobileDevelopment[i].enrolledStudents.length;
+       }
+       
+       for (let i = 0; i < Marketing.length; i++) {
+         marketingEnrolStudent += Marketing[i].enrolledStudents.length;
+       }
+   
+       for (let i = 0; i < MachineLearning.length; i++) {
+         machineLearningEnrolStudent += MachineLearning[i].enrolledStudents.length;
+       }
+   
+       for (let i = 0; i < Other.length; i++) {
+         otherEnrolStudent += Other[i].enrolledStudents.length;
+       }
+   
+       res.status(200).send({
+         success: true,
+         message: 'Courses found successfully',
+         wedDevelopment,
+         mobileDevelopment,
+         MachineLearning,
+         Marketing,
+         Other,
+         webEnrolStudent,
+         mobileEnrolStudent,
+         marketingEnrolStudent,
+         machineLearningEnrolStudent,
+         otherEnrolStudent
+       });
+   
+     } catch (error) {
+       res.status(400).send({
+         success: false,
+         message: 'Error while getting courses',
+         error: error.message
+       });
+     }
+   };
+   
+
+module.exports = { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController,getEachUserCreatedCourseController,createdAllCourseWithCategory };
