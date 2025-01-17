@@ -1,4 +1,5 @@
 const Course = require('../../models/courseModel/courseModel');
+const {authModel} = require("../../models/authModel/authModel")
 
 const courseCreateController = async (req, res) => {     
      console.log(req.body);
@@ -356,4 +357,55 @@ const getAllCoursesControllerWithoutApproval = async (req, res) => {
   }
 }
 
-module.exports = { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController,getEachUserCreatedCourseController,createdAllCourseWithCategory,setCourseProgressController,getAllCoursesControllerWithoutApproval };
+// const get consider user's review
+const getEachUserCreatedCourseReviewController = async (req, res) => {
+     try {
+       const allReviews = [];
+   
+       const courses = await Course.find({});
+   
+       // Extract all reviews from those courses
+       for (const course of courses) {
+         for (const review of course.reviews) {
+           allReviews.push({
+             reviewText: review.reviewText,
+             rating: review.rating,
+             reviewDate: review.createdAt,
+             reviewerId: review.userId,
+             courseId: course._id,
+             courseName: course.courseName,
+           });
+         }
+       }
+   
+       const allUsers = await authModel.find({}, 'name email'); 
+   
+       const reviewsWithUserDetails = allReviews.map((review) => {
+         const reviewer = allUsers.find(user => String(user._id) === String(review.reviewerId));
+         return {
+           ...review,
+           reviewer: reviewer
+             ? { name: reviewer.name, email: reviewer.email }
+             : { name: "Unknown User", email: "N/A" }, // Handle missing users
+         };
+       });
+   
+       res.status(200).send({
+         success: true,
+         message: "Fetched all course reviews with reviewer details",
+         data: reviewsWithUserDetails,
+       });
+
+   
+     } catch (error) {
+       res.status(400).send({
+         success: false,
+         message: "Something went wrong when fetching course reviews",
+         error: error.message,
+       });
+     }
+   };
+   
+
+
+module.exports = { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController,getEachUserCreatedCourseController,createdAllCourseWithCategory,setCourseProgressController,getAllCoursesControllerWithoutApproval,getEachUserCreatedCourseReviewController };

@@ -1,5 +1,5 @@
 const express = require('express');
-const { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController, getEachUserCreatedCourseController, createdAllCourseWithCategory, setCourseProgressController, getAllCoursesControllerWithoutApproval } = require('../../controllers/courseController/courseController');
+const { courseCreateController, getCreatedCourseController, updatedCreateCourseController, courseDeleteController, getCreatedOneCourseController, reviewRatingController, getEachUserCreatedCourseController, createdAllCourseWithCategory, setCourseProgressController, getAllCoursesControllerWithoutApproval, getEachUserCreatedCourseReviewController } = require('../../controllers/courseController/courseController');
 
 const router = express.Router();
 
@@ -33,5 +33,8 @@ router.get("/category",createdAllCourseWithCategory)
 // set course progress
 router.post('/setCourseProgress',setCourseProgressController)
 
+
+// get each user's review
+router.get("/getEachUserCreatedCourseReview",getEachUserCreatedCourseReviewController)
 
 module.exports = router
