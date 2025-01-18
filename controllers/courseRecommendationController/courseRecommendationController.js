@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const Course = require('../../models/courseModel/courseModel'); 
+const Course = require('../../models/courseModel/courseModel');
 
 // Path to store log file
-const logFilePath = path.join(__dirname,'../request_log.txt' );
+const logFilePath = path.join(__dirname, '../request_log.txt');
 
 const logRequest = () => {
   const logMessage = `Request received at: ${new Date().toISOString()}\n`;
@@ -22,53 +22,62 @@ const courseRecommendationController = async (req, res) => {
     logRequest();
 
     const { interests } = req.body;
+    console.log(interests);
 
+    // Fetch all approved courses
     const courses = await Course.find({ isApprove: true });
 
-    // Prepare prompt for GPT-3.5 model
-//     const prompt = `
-//       Based on the following skills, interests, and career goals, please recommend the best courses from the provided list. The user is interested in courses that align with the following topics and technologies:
+    // // Prepare the prompt for GPT-3.5
+    // const prompt = `
+    //   Based on the following skills, interests, and career goals, please recommend the best courses from the provided list. The user is interested in courses that align with the following topics and technologies:
 
-//         - Interests and Skills: ${interests || "N/A"}
-//         - Course List: ${JSON.stringify(courses)}
+    //     - Interests and Skills: ${interests || "N/A"}
+    //     - Course List: ${JSON.stringify(courses)}
 
-//         Please provide a detailed list of course recommendations that are most relevant to the user's interests and skills. For each recommended course, include the following details:
+    //     Please provide a detailed list of course recommendations that are most relevant to the user's interests and skills. For each recommended course, include the following details:
 
-//         - Course Name
-//         - Category (e.g., Web Development, Mobile App Development, etc.)
-//         - Relevant Topics or Skills Covered
-//         - Price (if available)
-//         - Duration
-//         - Instructor (if available)
-//         - Image Link
+    //     - CourseName
+    //     - Category (e.g., Web Development, Mobile App Development, etc.)
+    //     - Relevant Topics or Skills Covered
+    //     - Price (if available)
+    //     - Duration
+    //     - Instructor (if available)
+    //     - Image Link
 
-//         Make sure the recommendations focus on courses that help the user develop or improve the skills mentioned in their interests, such as software engineering, full-stack development, mobile app development (e.g., Flutter, React Native), or any related technology.
+    //     Make sure the recommendations focus on courses that help the user develop or improve the skills mentioned in their interests, such as software engineering, full-stack development, mobile app development (e.g., Flutter, React Native), or any related technology.
+    // `;
 
-//          `;
+    // // Send the prompt to the OpenAI API
+    // const response = await axios.post(
+    //   "https://api.openai.com/v1/chat/completions",
+    //   {
+    //     model: "gpt-3.5-turbo",
+    //     messages: [{ role: "user", content: prompt }],
+    //     max_tokens: 250,
+    //   },
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    //     },
+    //   }
+    // );
 
-//     // Send request to OpenAI API
-//     const response = await axios.post(
-//       "https://api.openai.com/v1/chat/completions",
-//       {
-//         model: "gpt-3.5-turbo",
-//         messages: [{ role: "user", content: prompt }],
-//         max_tokens: 250,
-//       },
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-//         },
-//       }
-//     );
+    // // Process and format the course recommendations
+    // const recommendations = response.data.choices[0].message.content;
 
-//     // Process and send the response back to the client
-//     const recommendations = response.data.choices[0].message.content;
+    // // Example: Parsing the formatted course recommendations
+    // const formattedRecommendations = recommendations.split("\n\n").map((course, index) => {
+    //   const lines = course.split("\n");
 
+    //     return lines
+    // });
+
+    // Send the formatted response back to the client
     res.status(200).send({
       success: true,
       message: "Courses fetched successfully",
-      data: courses,
+      data: courses
     });
 
   } catch (error) {
@@ -81,4 +90,6 @@ const courseRecommendationController = async (req, res) => {
   }
 };
 
-module.exports = {courseRecommendationController};
+
+
+module.exports = { courseRecommendationController };
