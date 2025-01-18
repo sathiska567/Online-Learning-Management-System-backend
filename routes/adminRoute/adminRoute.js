@@ -1,5 +1,5 @@
 const express = require('express');
-const { approveCourseController, TeacherRoleApproveController, getAllTeacherController, getAllStudentController, BannedUserController } = require('../../controllers/adminController/adminController');
+const { approveCourseController, TeacherRoleApproveController, getAllTeacherController, getAllStudentController, BannedUserController, approveCoursesController, removeApproveCoursesController } = require('../../controllers/adminController/adminController');
 
 const router = express.Router();
 
@@ -17,5 +17,11 @@ router.get('/getAllStudent', getAllStudentController);
 
 // banned user
 router.post('/bannedUser', BannedUserController);
+
+// approve courses
+router.post('/approveCourses', approveCoursesController);
+
+// remove approval
+router.post('/removeApproval', removeApproveCoursesController);
 
 module.exports = router
