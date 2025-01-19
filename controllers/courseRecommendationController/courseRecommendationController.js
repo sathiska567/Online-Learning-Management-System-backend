@@ -19,41 +19,71 @@ const logRequest = () => {
 // Course Recommendation Controller
 const courseRecommendationController = async (req, res) => {
   try {
-    logRequest();
+    // Ensure logging function exists or remove it
+    if (typeof logRequest === "function") {
+      logRequest();
+    }
 
     const { interests } = req.body;
-    console.log(interests);
+    console.log("User Interests:", interests);
 
-    // Fetch all approved courses
+    // Fetch approved courses from the database
     const courses = await Course.find({ isApprove: true });
+
+    if (!courses.length) {
+      return res.status(404).json({ success: false, message: "No courses found" });
+    }
 
     // Prepare the prompt for GPT-3.5
     const prompt = `
-      Based on the following skills, interests, and career goals, please recommend the best courses from the provided list. The user is interested in courses that align with the following topics and technologies:
+  Based on the following skills, interests, and career goals, recommend the best courses from the provided list. 
+  The user is interested in courses that align with the following topics and technologies:
 
-        - Interests and Skills: ${interests || "N/A"}
-        - Course List: ${JSON.stringify(courses)}
+  - Interests and Skills: ${interests || "N/A"}
+  - Course List: ${JSON.stringify(courses)}
 
-        Please provide a detailed list of course recommendations that are most relevant to the user's interests and skills. For each recommended course, include the following details:
+  Respond strictly in valid JSON format with an array of recommended courses, following this structure:
 
-        - CourseName
-        - Category (e.g., Web Development, Mobile App Development, etc.)
-        - Relevant Topics or Skills Covered
-        - Price (if available)
-        - Duration
-        - Instructor (if available)
-        - Image Link
+  {
+    "recommendations": [
+      {
+        "title": "Course Title",
+        "description": "Brief course description",
+        "imgLink": "https://example.com/image.jpg",
+        "category": "Category Name",
+        "price": 100,
+        "enrolledStudents": ["userId1", "userId2"],
+        "reviews": [
+          {
+            "userId": "userId123",
+            "reviewText": "Great course!",
+            "rating": 5
+          }
+        ],
+        "overallRatings": 4.5,
+        "instructor": "Instructor Name",
+        "duration": "6 weeks",
+        "isDeleted": false,
+        "isApprove": true,
+        "progress": 75,
+        "createdAt": "2024-01-01T12:00:00Z",
+        "updatedAt": "2024-01-05T12:00:00Z"
+      }
+    ]
+  }
 
-        Make sure the recommendations focus on courses that help the user develop or improve the skills mentioned in their interests, such as software engineering, full-stack development, mobile app development (e.g., Flutter, React Native), or any related technology.
-    `;
+  Strictly return only valid JSON without any additional text or explanations.
+`;
 
-    // Send the prompt to the OpenAI API
+
+    // Send the prompt to OpenAI API
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 250,
+        max_tokens: 500,
+        temperature: 0.7,
       },
       {
         headers: {
@@ -63,32 +93,25 @@ const courseRecommendationController = async (req, res) => {
       }
     );
 
-    // Process and format the course recommendations
-    const recommendations = response.data.choices[0].message.content;
+    // Extract and parse the JSON response
+    let recommendations;
+    try {
+      recommendations = JSON.parse(response.data.choices[0].message.content);
+    } catch (jsonError) {
+      console.error("JSON Parsing Error:", jsonError);
+      return res.status(500).json({ success: false, message: "Invalid AI response format" });
+    }
 
-    // Example:Parsing the formatted course recommendations
-    const formattedRecommendations = recommendations.split("\n\n").map((course, index) => {
-      const lines = course.split("\n");
+    // Validate if recommendations contain expected structure
+    if (!recommendations || !recommendations.recommendations) {
+      return res.status(500).json({ success: false, message: "Unexpected AI response format" });
+    }
 
-      return lines
-
-    });
-
-    // Send the formatted response back to the client
-    res.status(200).send({
-      success: true,
-      message: "Courses fetched successfully",
-      data: formattedRecommendations
-    });
-    
+    res.status(200).json(recommendations);
 
   } catch (error) {
-    // Handle any errors and send response
     console.error("Error:", error);
-    res.status(400).send({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: "An error occurred", error: error.message });
   }
 };
 
