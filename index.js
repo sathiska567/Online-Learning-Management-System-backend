@@ -21,6 +21,9 @@ const PORT = 4000;
 // Connect to the database
 connectDB();
 
+app.get("/", (req, res) => {
+  res.send("Hello World, from express");
+});
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/forgotten", forgottenPasswordRoute);
@@ -30,3 +33,5 @@ app.use("/api/v1/admin",adminRoute)
 app.use("/api/v1/recommendation",courseRecommendationRoute)
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+console.log("Server is running on port 4000")
