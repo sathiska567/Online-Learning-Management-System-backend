@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Start the server
-const PORT = 8080;
+const PORT = 4000;
 
 // Connect to the database
 connectDB();
